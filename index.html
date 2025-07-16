@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6383466274548914"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RWBYGuesser - A simple episode guesser game</title>
+    <meta name="title" content="RWBYGuesser - A simple episode guesser game">
+    <meta name="description" content="Guess the episode from a single frame">
+    <meta name="keywords" content="rwby, rwby fangame, fangame, rwby guesser, rwbyguessr">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="English">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="RWBYGuesser">
+    <meta name="twitter:site" content="@ProtOfMantle">
+    <meta name="twitter:description" content="Guess the episode based on a single frame">
+    <meta name="twitter:image" content="https://rwbyguesser.rubyrose.top/get_image">
+    <style>
+        html,body {
+            height: 100%;
+            width: 100%;
+            background-color: #0E0E0E;
+            color: #F0F0F0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+  justify-content: center;
+  margin-left: 20%;
+        }
+        .title {
+            color: white;
+            text-decoration: none;
+        }
+        .live-selection {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            height: 10%;
+        }
+        .live-selection div {
+            background-color: #1E1E1E;
+            width: 100%;
+            height: 64px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .live-selection div:nth-child(2) {
+            margin-left: 0.25rem;
+            margin-right: 0.25rem;
+        }
+        @media only screen and (max-width: 600px) {
+            .live-selection {
+                flex-direction: column;
+            }
+            .live-selection div:nth-child(2) {
+                margin-left: 0;
+                margin-right: 0;
+            }
+            .live-selection div {
+                width: auto;
+            }
+            #game {
+                width: 100%;
+                margin-left: 0%;
+            }
+        }
+        .live-selected {
+            background-color: #3F3F3F !important;
+        }
+        .show-selected {
+            background-color: #3F3F3F !important;
+        }
+        .episode-selected {
+            background-color: #3F3F3F !important;
+        }
+        .time-selected {
+            background-color: #3F3F3F !important;
+        }
+        .start-btn {
+            padding: 1rem;
+            background-color: #3F3F3F !important;
+            font-size: 48px;
+        }
+        a {
+            color: aqua;
+        }
+        #game {
+            display: none;
+        }
+        #mainimg {
+            width: 100%;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            max-width: 850px;
+        }
+        #imgwrapper {
+            display: flex;
+            justify-content: center;
+        }
+        .disabled {
+            pointer-events: none;
+        }
+        .start-btn-small {
+            padding: 0.5rem;
+            background-color: #3F3F3F !important;
+            width: 20%;
+            margin-top: 1rem;
+        }
+    </style>
+    <style>
+        .choices{position:relative;margin-bottom:24px;font-size:16px}.choices:focus{outline:0}.choices:last-child{margin-bottom:0}.choices.is-open{overflow:visible}.choices.is-disabled .choices__inner,.choices.is-disabled .choices__input{background-color:#1F1F1F;cursor:not-allowed;-webkit-user-select:none;user-select:none}.choices.is-disabled .choices__item{cursor:not-allowed}.choices [hidden]{display:none!important}.choices[data-type*=select-one]{cursor:pointer}.choices[data-type*=select-one] .choices__inner{padding-bottom:7.5px;display:flex;align-items:center;}.choices[data-type*=select-one] .choices__input{display:block;width:100%;padding:10px;border-bottom:1px solid #ddd;background-color:#1F1F1F;margin:0}.choices[data-type*=select-one] .choices__button{background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAyMSAyMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0yLjU5Mi4wNDRsMTguMzY0IDE4LjM2NC0yLjU0OCAyLjU0OEwuMDQ0IDIuNTkyeiIvPjxwYXRoIGQ9Ik0wIDE4LjM2NEwxOC4zNjQgMGwyLjU0OCAyLjU0OEwyLjU0OCAyMC45MTJ6Ii8+PC9nPjwvc3ZnPg==);padding:0;background-size:8px;position:absolute;top:50%;right:0;margin-top:-10px;margin-right:25px;height:20px;width:20px;border-radius:10em;opacity:.25}.choices[data-type*=select-one] .choices__button:focus,.choices[data-type*=select-one] .choices__button:hover{opacity:1}.choices[data-type*=select-one] .choices__button:focus{box-shadow:0 0 0 2px #005f75}.choices[data-type*=select-one] .choices__item[data-placeholder] .choices__button{display:none}.choices[data-type*=select-one]::after{content:"";height:0;width:0;border-style:solid;border-color:#333 transparent transparent;border-width:5px;position:absolute;right:11.5px;top:50%;margin-top:-2.5px;pointer-events:none}.choices[data-type*=select-one].is-open::after{border-color:transparent transparent #333;margin-top:-7.5px}.choices[data-type*=select-one][dir=rtl]::after{left:11.5px;right:auto}.choices[data-type*=select-one][dir=rtl] .choices__button{right:auto;left:0;margin-left:25px;margin-right:0}.choices[data-type*=select-multiple] .choices__inner,.choices[data-type*=text] .choices__inner{cursor:text}.choices[data-type*=select-multiple] .choices__button,.choices[data-type*=text] .choices__button{position:relative;display:inline-block;margin:0-4px 0 8px;padding-left:16px;border-left:1px solid #003642;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAyMSAyMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSIjRkZGIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0yLjU5Mi4wNDRsMTguMzY0IDE4LjM2NC0yLjU0OCAyLjU0OEwuMDQ0IDIuNTkyeiIvPjxwYXRoIGQ9Ik0wIDE4LjM2NEwxOC4zNjQgMGwyLjU0OCAyLjU0OEwyLjU0OCAyMC45MTJ6Ii8+PC9nPjwvc3ZnPg==);background-size:8px;width:8px;line-height:1;opacity:.75;border-radius:0}.choices[data-type*=select-multiple] .choices__button:focus,.choices[data-type*=select-multiple] .choices__button:hover,.choices[data-type*=text] .choices__button:focus,.choices[data-type*=text] .choices__button:hover{opacity:1}.choices__inner{vertical-align:top;width:100%;background-color:#2F2F2F;border:1px solid #ddd;border-radius:2.5px;font-size:14px;min-height:44px;overflow:hidden}.is-focused .choices__inner,.is-open .choices__inner{border-color:#b7b7b7}.is-open .choices__inner{border-radius:2.5px 2.5px 0 0}.is-flipped.is-open .choices__inner{border-radius:0 0 2.5px 2.5px}.choices__list{margin:0;padding-left:0;list-style:none}.choices__list--single{display:inline-block;padding:4px 16px 4px 4px;width:100%}[dir=rtl] .choices__list--single{padding-right:4px;padding-left:16px}.choices__list--single .choices__item{width:100%}.choices__list--multiple{display:inline}.choices__list--multiple .choices__item{display:inline-block;vertical-align:middle;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:500;margin-right:3.75px;margin-bottom:3.75px;background-color:#005f75;border:1px solid #004a5c;color:#fff;word-break:break-all;box-sizing:border-box}.choices__list--multiple .choices__item[data-deletable]{padding-right:5px}[dir=rtl] .choices__list--multiple .choices__item{margin-right:0;margin-left:3.75px}.choices__list--multiple .choices__item.is-highlighted{background-color:#004a5c;border:1px solid #003642}.is-disabled .choices__list--multiple .choices__item{background-color:#aaa;border:1px solid #919191}.choices__list--dropdown,.choices__list[aria-expanded]{display:none;z-index:1;position:absolute;width:100%;background-color:#1F1F1F;border:1px solid #ddd;top:100%;margin-top:-1px;border-bottom-left-radius:2.5px;border-bottom-right-radius:2.5px;overflow:hidden;word-break:break-all}.is-active.choices__list--dropdown,.is-active.choices__list[aria-expanded]{display:block}.is-open .choices__list--dropdown,.is-open .choices__list[aria-expanded]{border-color:#b7b7b7}.is-flipped .choices__list--dropdown,.is-flipped .choices__list[aria-expanded]{top:auto;bottom:100%;margin-top:0;margin-bottom:-1px;border-radius:.25rem .25rem 0 0}.choices__list--dropdown .choices__list,.choices__list[aria-expanded] .choices__list{position:relative;max-height:300px;overflow:auto;-webkit-overflow-scrolling:touch;will-change:scroll-position}.choices__list--dropdown .choices__item,.choices__list[aria-expanded] .choices__item{position:relative;padding:10px;font-size:14px}[dir=rtl] .choices__list--dropdown .choices__item,[dir=rtl] .choices__list[aria-expanded] .choices__item{text-align:right}@media (min-width:640px){.choices__list--dropdown .choices__item--selectable[data-select-text],.choices__list[aria-expanded] .choices__item--selectable[data-select-text]{padding-right:100px}.choices__list--dropdown .choices__item--selectable[data-select-text]::after,.choices__list[aria-expanded] .choices__item--selectable[data-select-text]::after{content:attr(data-select-text);font-size:12px;opacity:0;position:absolute;right:10px;top:50%;transform:translateY(-50%)}[dir=rtl] .choices__list--dropdown .choices__item--selectable[data-select-text],[dir=rtl] .choices__list[aria-expanded] .choices__item--selectable[data-select-text]{text-align:right;padding-left:100px;padding-right:10px}[dir=rtl] .choices__list--dropdown .choices__item--selectable[data-select-text]::after,[dir=rtl] .choices__list[aria-expanded] .choices__item--selectable[data-select-text]::after{right:auto;left:10px}}.choices__list--dropdown .choices__item--selectable.is-highlighted,.choices__list[aria-expanded] .choices__item--selectable.is-highlighted{background-color:#3F3F3F}.choices__list--dropdown .choices__item--selectable.is-highlighted::after,.choices__list[aria-expanded] .choices__item--selectable.is-highlighted::after{opacity:.5}.choices__item{cursor:default}.choices__item--selectable{cursor:pointer}.choices__item--disabled{cursor:not-allowed;-webkit-user-select:none;user-select:none;opacity:.5}.choices__heading{font-weight:600;font-size:12px;padding:10px;border-bottom:1px solid #f7f7f7;color:gray}.choices__button{text-indent:-9999px;appearance:none;border:0;background-color:transparent;background-repeat:no-repeat;background-position:center;cursor:pointer}.choices__button:focus,.choices__input:focus{outline:0}.choices__input{display:inline-block;vertical-align:baseline;background-color:#3F3F3F;font-size:14px;margin-bottom:5px;border:0;border-radius:0;max-width:100%;padding:4px 0 4px 2px}.choices__input::-webkit-search-cancel-button,.choices__input::-webkit-search-decoration,.choices__input::-webkit-search-results-button,.choices__input::-webkit-search-results-decoration{display:none}.choices__input::-ms-clear,.choices__input::-ms-reveal{display:none;width:0;height:0}[dir=rtl] .choices__input{padding-right:2px;padding-left:0}.choices__placeholder{opacity:.5}
+    </style>
+</head>
+<body>
+	<script>
+		const BASE_URL = `http${location.hostname === "localhost" || location.hostname === "127.0.0.1" ? "" : "s"}://${window.location.host}`;
+	</script>
+    <div id="menu" class="container">
+        <center>
+            <a href="/" class="title"><h1 style="display: block ruby;"><div style="color: red;">R</div><div style="color: white;">W</div><div style="color: blueviolet;">B</div><div style="color: yellow;">Y</div>Guesser</h1></a>
+            <h3>Made by <a href="https://x.com/ProtOfMantle">@ProtOfMantle on Twitter</a></h3>
+            <h4>Our official link : https://rwbyguesser.quadvision.eu</h4>
+            <a href="/leaderboard"><h3>Show Leaderboard</h3></a>
+            <h2>Settings</h2>
+        </center>
+        <h3>Lives</h3>
+        <div class="live-selection" style="margin-bottom: 0%;">
+            <div class="" onclick="changeSettings(this,'live',1)">
+                1 Lives :skull:
+            </div>
+            <div class="live-selected" onclick="changeSettings(this,'live',3);">3 Live</div>
+            <div class="" onclick="changeSettings(this,'live',5)">5 Lives</div>
+        </div>
+        <h3>Show selection</h3>
+        <div class="live-selection">
+            <div class="show-selected" onclick="changeSettings(this,'show','main')">
+                Main show
+            </div>
+            <div class="" onclick="changeSettings(this,'show','chibi');">Chibi</div>
+            <div class="" onclick="changeSettings(this,'show','mainchibi')">Main show + Chibi</div>
+        </div>
+        <h3>Time limit</h3>
+        <div class="live-selection">
+            <div class="" onclick="changeSettings(this,'time',30)">
+                30 seconds
+            </div>
+            <div class="" onclick="changeSettings(this,'time',60);">60 seconds</div>
+            <div class="time-selected" onclick="changeSettings(this,'time',0)">No time limit</div>
+        </div>
+        <h3>Your username</h3>
+        <input type="text" name="" id="username" >
+        <label>
+            <input type="checkbox" name="checkbox" id="hide_game_id" value="value" style="margin-bottom: 1rem;margin-left: 0;" checked>
+            Hide Game ID
+         </label>
+        <center>
+            <div class="start-btn" onclick="startGame();">Start</div>
+            <p>Resume game</p>
+            <input type="text" id="resume_game_id" placeholder="8 digit Game ID">
+            <div class="start-btn-small" onclick="resumeGame();">Resume</div>
+        </center>
+
+    </div>
+    <div id="game" class="container">
+        <center>
+            <a href="https://rwbyguesser.quadvision.eu" class="title"><h1 style="display: block ruby;"><div style="color: red;">R</div><div style="color: white;">W</div><div style="color: blueviolet;">B</div><div style="color: yellow;">Y</div>Guesser</h1></a>
+            <h3>Made by <a href="https://x.com/ProtOfMantle">@ProtOfMantle on Twitter</a></h3>
+            
+            
+        </center>
+        <div id="main">
+            <div style="display: flex; flex-direction: row; justify-content: space-around">
+                <div style="display: flex;
+                flex-direction: column; align-items: center; height: 100px;"><h2 style="margin:0rem;">Lives: </h2> <h2 id="lives"></h2></div>
+                <div style="display: flex;
+                flex-direction: column; align-items: center; height: 100px;"><h2 style="margin:0rem;">Remaining time: </h2><div id="timer" style="display: flex; flex-direction: row;"><h2 id="minute">00</h2><h2>:</h2><h2 id="second">00</h2></div></div>
+                <div style="display: flex;
+                flex-direction: column; align-items: center; height: 100px;"><h2 style="margin:0rem;">Points: </h2> <h2 id="points">0</h2></div>
+            </div>
+            <div id="imgwrapper">
+                <img src="" alt="" id="mainimg">
+            </div>
+            <select name="episode" id="episode">
+                
+            </select>
+
+            <center>
+                <div class="start-btn" onclick="submit();" id="submit" class="disabled">Submit</div>
+                <p id="ingame_gameid"></p>
+                <p id="guesses" style="font-family:  Consolas, 'Courier New', monospace, 'Segoe UI Emoji';"></p>
+            </center>
+        </div>
+    </div>
+    <div id="post" class="container">
+        
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+        var choices;
+        var guesses = "";
+        
+        var settings = {
+            "lives": 3,
+            "epsel": 0,
+            "show": "main",
+            "time": 0,
+            "game_id": 0,
+            "hide_game_id": false
+        };
+        var game;
+        var points = 0;
+
+        // starts the game with the selected game_id
+        async function resumeGame() {
+            document.cookie = `game_id=${document.getElementById("resume_game_id").value}`;
+            settings.game_id = document.getElementById("resume_game_id").value;
+            await startGame(true);
+        }
+
+        function changeSettings(caller, setting, number) {
+            var selectedClass;
+            if(setting === "live") {
+                selectedClass = "live-selected";
+            }else if(setting === "time") {
+                selectedClass = "time-selected";
+            }else {
+                selectedClass = "show-selected";
+            }
+            console.log(selectedClass);
+            var elems = document.getElementsByClassName(selectedClass);
+            [].forEach.call(elems, function(el) {
+                el.classList.remove(selectedClass);
+            });
+            caller.classList.add(selectedClass);
+            console.log(caller);
+            if(setting === "live") {
+                settings.lives = number;
+                return;
+            }
+            if(setting === "show") {
+                settings.show = number;
+                return;
+            }
+            if(setting === "time") {
+                settings.time = number;
+                return;
+            }
+        }
+        
+
+        // resets everything, shows the game's div and fills up the options for the text input
+        async function startGame(isResume) {
+            guesses = "";
+            document.getElementById("guesses").innerHTML = "";
+            points = 0;
+            document.getElementById("points").innerHTML = points;
+            settings.hide_game_id = document.getElementById("hide_game_id").checked;
+            document.getElementById("lives").innerHTML = settings.lives;
+            switch(settings.show) {
+                case "main":
+                    document.getElementById("episode").innerHTML = `<option value=1>S1E1 - Ruby Rose</option>
+                <option value=2>S1E2 - The Shining Beacon</option>
+                <option value=3>S1E3 - The Shining Beacon, Pt.2</option>
+                <option value=4>S1E4 - The First Step</option>
+                <option value=5>S1E5 - The First Step, Pt.2</option>
+                <option value=6>S1E6 - The Emerald Forest</option>
+                <option value=7>S1E7 - The Emerald Forest, Pt.2</option>
+                <option value=8>S1E8 - Players and Pieces</option>
+                <option value=9>S1E9 - The Badge and The Burden</option>
+                <option value=10>S1E10 - The Badge and The Burden, Pt.2</option>
+                <option value=11>S1E11 - Jaunedice</option>
+                <option value=12>S1E12 - Jaunedice, Pt.2</option>
+                <option value=13>S1E13 - Forever Fall</option>
+                <option value=14>S1E14 - Forever Fall, Pt.2</option>
+                <option value=15>S1E15 - The Stray</option>
+                <option value=16>S1E16 - Black and White</option>
+                <option value=17>S2E1 - Best Day Ever</option>
+                <option value=18>S2E2 - Welcome to Beacon</option>
+                <option value=19>S2E3 - A Minor Hiccup</option>
+                <option value=20>S2E4 - Painting the Town</option>
+                <option value=21>S2E5 - Extracurricular</option>
+                <option value=22>S2E6 - Burning the Candle</option>
+                <option value=23>S2E7 - Dance Dance Infiltration</option>
+                <option value=24>S2E8 - Field Trip</option>
+                <option value=25>S2E9 - Search and Destroy</option>
+                <option value=26>S2E10 - Mountain Glenn</option>
+                <option value=27>S2E11 - No Brakes</option>
+                <option value=28>S2E12 - Breach</option>
+                <option value=29>S3E1 - Round One</option>
+                <option value=30>S3E2 - New Challengers</option>
+                <option value=31>S3E3 - It's Brawl in the Family</option>
+                <option value=32>S3E4 - Lessons Learned</option>
+                <option value=33>S3E5 - Never Miss a Beat</option>
+                <option value=34>S3E6 - Fall</option>
+                <option value=35>S3E7 - Beginning of the End</option>
+                <option value=36>S3E8 - Destiny</option>
+                <option value=37>S3E9 - PvP</option>
+                <option value=38>S3E10 - Battle of Beacon</option>
+                <option value=39>S3E11 - Heroes and Monsters</option>
+                <option value=40>S3E12 - End of the Beginning</option>
+                <option value=41>SE - Volume 4 Character Short</option>
+                <option value=42>S4E1 - The Next Step</option>
+                <option value=43>S4E2 - Remembrance</option>
+                <option value=44>S4E3 - Of Runaways and Stowaways</option>
+                <option value=45>S4E4 - Family</option>
+                <option value=46>S4E5 - Menagerie</option>
+                <option value=47>S4E6 - Tipping Point</option>
+                <option value=48>S4E7 - Punished</option>
+                <option value=49>S4E8 - A Much Needed Talk</option>
+                <option value=50>S4E9 - Two Steps Forward, Two Steps Back</option>
+                <option value=51>S4E10 - Kuroyuri</option>
+                <option value=52>S4E11 - Taking Control</option>
+                <option value=53>S4E12 - No Safe Haven</option>
+                <option value=54>SE - Volume 5 Weiss Character Short</option>
+                <option value=55>SE - Volume 5 Blake Character Short</option>
+                <option value=56>SE - Volume 5 Yang Character Short</option>
+                <option value=57>S5E1 - Welcome to Haven</option>
+                <option value=58>S5E2 - Dread in the Air</option>
+                <option value=59>S5E3 - Unforeseen Complications</option>
+                <option value=60>S5E4 - Lighting the Fire</option>
+                <option value=61>S5E5 - Necessary Sacrifice</option>
+                <option value=62>S5E6 - Known by its Song</option>
+                <option value=63>S5E7 - Rest and Resolutions</option>
+                <option value=64>S5E8 - Alone Together</option>
+                <option value=65>S5E9 - A Perfect Storm</option>
+                <option value=66>S5E10 - True Colors</option>
+                <option value=67>S5E11 - The More the Merrier</option>
+                <option value=68>S5E12 - Vault of the Spring Maiden</option>
+                <option value=69>S5E13 - Downfall</option>
+                <option value=70>S5E14 - Haven's Fate</option>
+                <option value=71>SE - Volume 6 Adam Character Short</option>
+                <option value=72>S6E1 - Argus Limited</option>
+                <option value=73>S6E2 - Uncovered</option>
+                <option value=74>S6E3 - The Lost Fable</option>
+                <option value=75>S6E4 - So That's How It Is</option>
+                <option value=76>S6E5 - The Coming Storm</option>
+                <option value=77>S6E6 - Alone in the Woods</option>
+                <option value=78>S6E7 - The Grimm Reaper</option>
+                <option value=79>S6E8 - Dead End</option>
+                <option value=80>S6E9 - Lost</option>
+                <option value=81>S6E10 - Stealing from the Elderly</option>
+                <option value=82>S6E11 - The Lady in the Shoe</option>
+                <option value=83>S6E12 - Seeing Red</option>
+                <option value=84>S6E13 - Our Way</option>
+                <option value=85>S7E1 - The Greatest Kingdom</option>
+                <option value=86>S7E2 - A New Approach</option>
+                <option value=87>S7E3 - Ace Operatives</option>
+                <option value=88>S7E4 - Pomp and Circumstance</option>
+                <option value=89>S7E5 - Sparks</option>
+                <option value=90>S7E6 - A Night Off</option>
+                <option value=91>S7E7 - Worst Case Scenario</option>
+                <option value=92>S7E8 - Cordially Invited</option>
+                <option value=93>S7E9 - As Above, So Below</option>
+                <option value=94>S7E10 - Out in the Open</option>
+                <option value=95>S7E11 - Gravity</option>
+                <option value=96>S7E12 - With Friends Like These</option>
+                <option value=97>S7E13 - The Enemy of Trust</option>
+                <option value=98>S8E1 - Divide</option>
+                <option value=99>S8E2 - Refuge</option>
+                <option value=100>S8E3 - Strings</option>
+                <option value=101>S8E4 - Fault</option>
+                <option value=102>S8E5 - Amity</option>
+                <option value=103>S8E6 - Midnight</option>
+                <option value=104>S8E7 - War</option>
+                <option value=105>S8E8 - Dark</option>
+                <option value=106>S8E9 - Witch</option>
+                <option value=107>S8E10 - Ultimatum</option>
+                <option value=108>S8E11 - Risk</option>
+                <option value=109>S8E12 - Creation</option>
+                <option value=110>S8E13 - Worthy</option>
+                <option value=111>S8E14 - The Final Word</option>
+                <option value=112>S9E1 - A Place of Particular Concern</option>
+                <option value=113>S9E2 - Altercation at the Auspicious Auction</option>
+                <option value=114>S9E3 - Rude, Red, and Royal</option>
+                <option value=115>S9E4 - A Cat Most Curious</option>
+                <option value=116>S9E5 - The Parfait Predicament</option>
+                <option value=117>S9E6 - Confessions Within Cumulonimbus Clouds</option>
+                <option value=118>S9E7 - The Perils of Paper Houses</option>
+                <option value=119>S9E8 - Tea Amidst Terrible Trouble</option>
+                <option value=120>S9E9 - A Tale Involving a Tree</option>
+                <option value=121>S9E10 - Of Solitude and Self</option>
+                <option value=122>SE - Volume 9 Bonus Ending Animatic</option>`;
+                break;
+                case "chibi":
+                document.getElementById("episode").innerHTML = `<option value=1001>Chibi S1E1 - Ruby Makes Cookies</option>
+<option value=1002>Chibi S1E2 - Cat Burglar</option>       
+<option value=1003>Chibi S1E3 - Reloading</option>
+<option value=1004>Chibi S1E4 - Fighting Game</option>     
+<option value=1005>Chibi S1E5 - Sissy Fight</option>       
+<option value=1006>Chibi S1E6 - The Vacuum</option>        
+<option value=1007>Chibi S1E7 - Prank Wars</option>        
+<option value=1008>Chibi S1E8 - Magnetic Personality</option>
+<option value=1009>Chibi S1E9 - Ren Plays Tag</option>
+<option value=1010>Chibi S1E10 - Love Triangle</option>
+<option value=1011>Chibi S1E11 - Nurse Ruby</option>
+<option value=1012>Chibi S1E12 - Little Red Riding Hood</option>
+<option value=1013>Chibi S1E13 - Spin the Bottle</option>
+<option value=1014>Chibi S1E14 - Big Vacation</option>
+<option value=1015>Chibi S1E15 - Neptune_s Phobia</option>
+<option value=1016>Chibi S1E16 - Bike Race</option>
+<option value=1017>Chibi S1E17 - Save Nora_</option>
+<option value=1018>Chibi S1E18 - Evil Plans</option>
+<option value=1019>Chibi S1E19 - Pillow Fight</option>
+<option value=1020>Chibi S1E20 - Roman_s Revenge</option>
+<option value=1021>Chibi S1E21 - Cinder Who_</option>
+<option value=1022>Chibi S1E22 - Security Woes</option>
+<option value=1023>Chibi S1E23 - A Slip Through Time and Space</option>
+<option value=1024>Chibi S1E24 - The One with a Laugh Track</option>
+<option value=1025>Chibi S2E1 - Director Ozpin</option>
+<option value=1026>Chibi S2E2 - Geist Buster</option>
+<option value=1027>Chibi S2E3 - Magic Show</option>
+<option value=1028>Chibi S2E4 - Dad Jokes</option>
+<option value=1029>Chibi S2E5 - Girls Rock_</option>
+<option value=1030>Chibi S2E6 - Super Besties</option>
+<option value=1031>Chibi S2E7 - Must Be Nice</option>
+<option value=1032>Chibi S2E8 - Boy Band</option>
+<option value=1033>Chibi S2E9 - Coming Home to Roost</option>
+<option value=1034>Chibi S2E10 - Cool Dad</option>
+<option value=1035>Chibi S2E11 - Movie Night</option>
+<option value=1036>Chibi S2E12 - Evil Genius</option>
+<option value=1037>Chibi S2E13 - Parent Teacher Conference</option>
+<option value=1038>Chibi S2E14 - Cannonball_</option>
+<option value=1039>Chibi S2E15 - Nurse Nora</option>
+<option value=1040>Chibi S2E16 - Neptune Noir</option>
+<option value=1041>Chibi S2E17 - The Mystery Bunch</option>
+<option value=1042>Chibi S2E18 - The Fixer</option>
+<option value=1043>Chibi S2E19 - Steals and Wheels</option>
+<option value=1044>Chibi S2E20 - Monsters of Rock</option>
+<option value=1045>Chibi S2E21 - Happy BirthdayWeen</option>
+<option value=1046>Chibi S2E22 - Battle of the Bands</option>
+<option value=1047>Chibi S2E23 - A Slip Through Time and Space Pt. 2</option>
+<option value=1048>Chibi S2E24 - Nondescript Holiday Spectacular</option>
+<option value=1049>Chibi S3E1 - Road Trip</option>
+<option value=1050>Chibi S3E2 - Evil Interview</option>
+<option value=1051>Chibi S3E3 - Mortal Frenemies</option>
+<option value=1052>Chibi S3E4 - Grimm Passengers</option>
+<option value=1053>Chibi S3E5 - Girls_ Night Out</option>
+<option value=1054>Chibi S3E6 - Teenage Faunus Ninja Catgirl</option>
+<option value=1055>Chibi S3E7 - Mysterious Red Button</option>
+<option value=1056>Chibi S3E8 - Kids vs Adults vs Pups</option>
+<option value=1057>Chibi S3E9 - Tea Party</option>
+<option value=1058>Chibi S3E10 - Prank War</option>
+<option value=1059>Chibi S3E11 - In The Clutches of Evil</option>
+<option value=1060>Chibi S3E12 - JNPR Dreams</option>
+<option value=1061>Chibi S3E13 - Cousins of Chaos</option>
+<option value=1062>Chibi S3E14 - Nefarious Dreams</option>
+<option value=1063>Chibi S3E15 - Play With Penny</option>
+<option value=1064>Chibi S3E16 - RWBY Dreams</option>
+<option value=1065>Chibi S4E1 - Cool as Coco</option>
+<option value=1066>Chibi S4E2 - Love Life</option>
+<option value=1067>Chibi S4E3 - Tai the Sub</option>
+<option value=1068>Chibi S4E4 - True Blue Friend</option>
+<option value=1069>Chibi S4E5 - Cardin_s Club</option>
+<option value=1070>Chibi S4E6 - Master Thief</option>
+<option value=1071>Chibi S4E7 - He Does It All</option>
+<option value=1072>Chibi S4E8 - Behind the Scenes</option>
+<option value=1073>Chibi S4E9 - Bad Criminal</option>
+<option value=1074>Chibi S4E10 - Port_s Fort</option>`;
+break;
+                case "mainchibi":
+                    document.getElementById("episode").innerHTML = `<option value=1>S1E1 - Ruby Rose</option>
+                <option value=2>S1E2 - The Shining Beacon</option>
+                <option value=3>S1E3 - The Shining Beacon, Pt.2</option>
+                <option value=4>S1E4 - The First Step</option>
+                <option value=5>S1E5 - The First Step, Pt.2</option>
+                <option value=6>S1E6 - The Emerald Forest</option>
+                <option value=7>S1E7 - The Emerald Forest, Pt.2</option>
+                <option value=8>S1E8 - Players and Pieces</option>
+                <option value=9>S1E9 - The Badge and The Burden</option>
+                <option value=10>S1E10 - The Badge and The Burden, Pt.2</option>
+                <option value=11>S1E11 - Jaunedice</option>
+                <option value=12>S1E12 - Jaunedice, Pt.2</option>
+                <option value=13>S1E13 - Forever Fall</option>
+                <option value=14>S1E14 - Forever Fall, Pt.2</option>
+                <option value=15>S1E15 - The Stray</option>
+                <option value=16>S1E16 - Black and White</option>
+                <option value=17>S2E1 - Best Day Ever</option>
+                <option value=18>S2E2 - Welcome to Beacon</option>
+                <option value=19>S2E3 - A Minor Hiccup</option>
+                <option value=20>S2E4 - Painting the Town</option>
+                <option value=21>S2E5 - Extracurricular</option>
+                <option value=22>S2E6 - Burning the Candle</option>
+                <option value=23>S2E7 - Dance Dance Infiltration</option>
+                <option value=24>S2E8 - Field Trip</option>
+                <option value=25>S2E9 - Search and Destroy</option>
+                <option value=26>S2E10 - Mountain Glenn</option>
+                <option value=27>S2E11 - No Brakes</option>
+                <option value=28>S2E12 - Breach</option>
+                <option value=29>S3E1 - Round One</option>
+                <option value=30>S3E2 - New Challengers</option>
+                <option value=31>S3E3 - It's Brawl in the Family</option>
+                <option value=32>S3E4 - Lessons Learned</option>
+                <option value=33>S3E5 - Never Miss a Beat</option>
+                <option value=34>S3E6 - Fall</option>
+                <option value=35>S3E7 - Beginning of the End</option>
+                <option value=36>S3E8 - Destiny</option>
+                <option value=37>S3E9 - PvP</option>
+                <option value=38>S3E10 - Battle of Beacon</option>
+                <option value=39>S3E11 - Heroes and Monsters</option>
+                <option value=40>S3E12 - End of the Beginning</option>
+                <option value=41>SE - Volume 4 Character Short</option>
+                <option value=42>S4E1 - The Next Step</option>
+                <option value=43>S4E2 - Remembrance</option>
+                <option value=44>S4E3 - Of Runaways and Stowaways</option>
+                <option value=45>S4E4 - Family</option>
+                <option value=46>S4E5 - Menagerie</option>
+                <option value=47>S4E6 - Tipping Point</option>
+                <option value=48>S4E7 - Punished</option>
+                <option value=49>S4E8 - A Much Needed Talk</option>
+                <option value=50>S4E9 - Two Steps Forward, Two Steps Back</option>
+                <option value=51>S4E10 - Kuroyuri</option>
+                <option value=52>S4E11 - Taking Control</option>
+                <option value=53>S4E12 - No Safe Haven</option>
+                <option value=54>SE - Volume 5 Weiss Character Short</option>
+                <option value=55>SE - Volume 5 Blake Character Short</option>
+                <option value=56>SE - Volume 5 Yang Character Short</option>
+                <option value=57>S5E1 - Welcome to Haven</option>
+                <option value=58>S5E2 - Dread in the Air</option>
+                <option value=59>S5E3 - Unforeseen Complications</option>
+                <option value=60>S5E4 - Lighting the Fire</option>
+                <option value=61>S5E5 - Necessary Sacrifice</option>
+                <option value=62>S5E6 - Known by its Song</option>
+                <option value=63>S5E7 - Rest and Resolutions</option>
+                <option value=64>S5E8 - Alone Together</option>
+                <option value=65>S5E9 - A Perfect Storm</option>
+                <option value=66>S5E10 - True Colors</option>
+                <option value=67>S5E11 - The More the Merrier</option>
+                <option value=68>S5E12 - Vault of the Spring Maiden</option>
+                <option value=69>S5E13 - Downfall</option>
+                <option value=70>S5E14 - Haven's Fate</option>
+                <option value=71>SE - Volume 6 Adam Character Short</option>
+                <option value=72>S6E1 - Argus Limited</option>
+                <option value=73>S6E2 - Uncovered</option>
+                <option value=74>S6E3 - The Lost Fable</option>
+                <option value=75>S6E4 - So That's How It Is</option>
+                <option value=76>S6E5 - The Coming Storm</option>
+                <option value=77>S6E6 - Alone in the Woods</option>
+                <option value=78>S6E7 - The Grimm Reaper</option>
+                <option value=79>S6E8 - Dead End</option>
+                <option value=80>S6E9 - Lost</option>
+                <option value=81>S6E10 - Stealing from the Elderly</option>
+                <option value=82>S6E11 - The Lady in the Shoe</option>
+                <option value=83>S6E12 - Seeing Red</option>
+                <option value=84>S6E13 - Our Way</option>
+                <option value=85>S7E1 - The Greatest Kingdom</option>
+                <option value=86>S7E2 - A New Approach</option>
+                <option value=87>S7E3 - Ace Operatives</option>
+                <option value=88>S7E4 - Pomp and Circumstance</option>
+                <option value=89>S7E5 - Sparks</option>
+                <option value=90>S7E6 - A Night Off</option>
+                <option value=91>S7E7 - Worst Case Scenario</option>
+                <option value=92>S7E8 - Cordially Invited</option>
+                <option value=93>S7E9 - As Above, So Below</option>
+                <option value=94>S7E10 - Out in the Open</option>
+                <option value=95>S7E11 - Gravity</option>
+                <option value=96>S7E12 - With Friends Like These</option>
+                <option value=97>S7E13 - The Enemy of Trust</option>
+                <option value=98>S8E1 - Divide</option>
+                <option value=99>S8E2 - Refuge</option>
+                <option value=100>S8E3 - Strings</option>
+                <option value=101>S8E4 - Fault</option>
+                <option value=102>S8E5 - Amity</option>
+                <option value=103>S8E6 - Midnight</option>
+                <option value=104>S8E7 - War</option>
+                <option value=105>S8E8 - Dark</option>
+                <option value=106>S8E9 - Witch</option>
+                <option value=107>S8E10 - Ultimatum</option>
+                <option value=108>S8E11 - Risk</option>
+                <option value=109>S8E12 - Creation</option>
+                <option value=110>S8E13 - Worthy</option>
+                <option value=111>S8E14 - The Final Word</option>
+                <option value=112>S9E1 - A Place of Particular Concern</option>
+                <option value=113>S9E2 - Altercation at the Auspicious Auction</option>
+                <option value=114>S9E3 - Rude, Red, and Royal</option>
+                <option value=115>S9E4 - A Cat Most Curious</option>
+                <option value=116>S9E5 - The Parfait Predicament</option>
+                <option value=117>S9E6 - Confessions Within Cumulonimbus Clouds</option>
+                <option value=118>S9E7 - The Perils of Paper Houses</option>
+                <option value=119>S9E8 - Tea Amidst Terrible Trouble</option>
+                <option value=120>S9E9 - A Tale Involving a Tree</option>
+                <option value=121>S9E10 - Of Solitude and Self</option>
+                <option value=122>SE - Volume 9 Bonus Ending Animatic</option>
+                <option value=1001>Chibi S1E1 - Ruby Makes Cookies</option>
+<option value=1002>Chibi S1E2 - Cat Burglar</option>       
+<option value=1003>Chibi S1E3 - Reloading</option>
+<option value=1004>Chibi S1E4 - Fighting Game</option>     
+<option value=1005>Chibi S1E5 - Sissy Fight</option>       
+<option value=1006>Chibi S1E6 - The Vacuum</option>        
+<option value=1007>Chibi S1E7 - Prank Wars</option>        
+<option value=1008>Chibi S1E8 - Magnetic Personality</option>
+<option value=1009>Chibi S1E9 - Ren Plays Tag</option>
+<option value=1010>Chibi S1E10 - Love Triangle</option>
+<option value=1011>Chibi S1E11 - Nurse Ruby</option>
+<option value=1012>Chibi S1E12 - Little Red Riding Hood</option>
+<option value=1013>Chibi S1E13 - Spin the Bottle</option>
+<option value=1014>Chibi S1E14 - Big Vacation</option>
+<option value=1015>Chibi S1E15 - Neptune_s Phobia</option>
+<option value=1016>Chibi S1E16 - Bike Race</option>
+<option value=1017>Chibi S1E17 - Save Nora_</option>
+<option value=1018>Chibi S1E18 - Evil Plans</option>
+<option value=1019>Chibi S1E19 - Pillow Fight</option>
+<option value=1020>Chibi S1E20 - Roman_s Revenge</option>
+<option value=1021>Chibi S1E21 - Cinder Who_</option>
+<option value=1022>Chibi S1E22 - Security Woes</option>
+<option value=1023>Chibi S1E23 - A Slip Through Time and Space</option>
+<option value=1024>Chibi S1E24 - The One with a Laugh Track</option>
+<option value=1025>Chibi S2E1 - Director Ozpin</option>
+<option value=1026>Chibi S2E2 - Geist Buster</option>
+<option value=1027>Chibi S2E3 - Magic Show</option>
+<option value=1028>Chibi S2E4 - Dad Jokes</option>
+<option value=1029>Chibi S2E5 - Girls Rock_</option>
+<option value=1030>Chibi S2E6 - Super Besties</option>
+<option value=1031>Chibi S2E7 - Must Be Nice</option>
+<option value=1032>Chibi S2E8 - Boy Band</option>
+<option value=1033>Chibi S2E9 - Coming Home to Roost</option>
+<option value=1034>Chibi S2E10 - Cool Dad</option>
+<option value=1035>Chibi S2E11 - Movie Night</option>
+<option value=1036>Chibi S2E12 - Evil Genius</option>
+<option value=1037>Chibi S2E13 - Parent Teacher Conference</option>
+<option value=1038>Chibi S2E14 - Cannonball_</option>
+<option value=1039>Chibi S2E15 - Nurse Nora</option>
+<option value=1040>Chibi S2E16 - Neptune Noir</option>
+<option value=1041>Chibi S2E17 - The Mystery Bunch</option>
+<option value=1042>Chibi S2E18 - The Fixer</option>
+<option value=1043>Chibi S2E19 - Steals and Wheels</option>
+<option value=1044>Chibi S2E20 - Monsters of Rock</option>
+<option value=1045>Chibi S2E21 - Happy BirthdayWeen</option>
+<option value=1046>Chibi S2E22 - Battle of the Bands</option>
+<option value=1047>Chibi S2E23 - A Slip Through Time and Space Pt. 2</option>
+<option value=1048>Chibi S2E24 - Nondescript Holiday Spectacular</option>
+<option value=1049>Chibi S3E1 - Road Trip</option>
+<option value=1050>Chibi S3E2 - Evil Interview</option>
+<option value=1051>Chibi S3E3 - Mortal Frenemies</option>
+<option value=1052>Chibi S3E4 - Grimm Passengers</option>
+<option value=1053>Chibi S3E5 - Girls_ Night Out</option>
+<option value=1054>Chibi S3E6 - Teenage Faunus Ninja Catgirl</option>
+<option value=1055>Chibi S3E7 - Mysterious Red Button</option>
+<option value=1056>Chibi S3E8 - Kids vs Adults vs Pups</option>
+<option value=1057>Chibi S3E9 - Tea Party</option>
+<option value=1058>Chibi S3E10 - Prank War</option>
+<option value=1059>Chibi S3E11 - In The Clutches of Evil</option>
+<option value=1060>Chibi S3E12 - JNPR Dreams</option>
+<option value=1061>Chibi S3E13 - Cousins of Chaos</option>
+<option value=1062>Chibi S3E14 - Nefarious Dreams</option>
+<option value=1063>Chibi S3E15 - Play With Penny</option>
+<option value=1064>Chibi S3E16 - RWBY Dreams</option>
+<option value=1065>Chibi S4E1 - Cool as Coco</option>
+<option value=1066>Chibi S4E2 - Love Life</option>
+<option value=1067>Chibi S4E3 - Tai the Sub</option>
+<option value=1068>Chibi S4E4 - True Blue Friend</option>
+<option value=1069>Chibi S4E5 - Cardin_s Club</option>
+<option value=1070>Chibi S4E6 - Master Thief</option>
+<option value=1071>Chibi S4E7 - He Does It All</option>
+<option value=1072>Chibi S4E8 - Behind the Scenes</option>
+<option value=1073>Chibi S4E9 - Bad Criminal</option>
+<option value=1074>Chibi S4E10 - Port_s Fort</option>`;
+break;
+            }
+            var element = document.querySelector('#episode');
+            if(typeof choices === "undefined") {
+                choices = new Choices(element);
+            }
+            // if it's a new game, we start it and get the game id from the response
+            if(!(isResume)) {
+                let resp = await fetch(`${BASE_URL}/api/start`, {
+                    method: "POST",
+                    body: JSON.stringify({lives: settings.lives, mode: settings.show, username: document.getElementById("username").value}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include"
+                });
+                let resp_text = await resp.text();
+                settings.game_id = parseInt(resp_text);
+                console.log(`/api/start ${resp.status}`);
+            }
+            if(!settings.hide_game_id){
+                document.getElementById("ingame_gameid").innerHTML = `Game ID : ${settings.game_id}`;
+            }else {
+                document.getElementById("ingame_gameid").innerHTML = `<input type="button" value="Copy Game ID" onclick="navigator.clipboard.writeText(settings.game_id)">`;
+            }
+            // hide other menus
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("post").style.display = "none";
+            document.getElementById("game").style.display = "block";
+            // display first image
+            resp = await fetch(`${BASE_URL}/api/round`, {
+                method: "GET",
+                credentials: "include",
+            });
+            let resp_headers = resp.headers;
+            // check if game_id is invalid while trying to reconnect to an old game
+            if(resp.status == 400) {
+                alert(await resp.text());
+                window.location.reload();
+            }
+            points = parseInt(resp_headers.get('X-Points'));
+            
+            document.getElementById("points").innerHTML = points;
+            document.getElementById("lives").innerHTML = resp_headers.get("X-Lives");
+            var blob = await resp.blob();
+            
+            var objectURL = URL.createObjectURL(blob);
+            document.getElementById("mainimg").src = objectURL;
+            document.getElementById("submit").classList.remove("disabled");
+            setTimer();
+        }
+
+        // submit guess
+        async function submit() {
+            let id = parseInt(choices.getValue()["value"]);
+            document.getElementById("submit").classList.add("disabled");
+            setTimer();
+            let resp = await fetch(`${BASE_URL}/api/round`, {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({episode: id}),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            });
+            let resp_text = await resp.text();
+            let resp_status = await resp.status;
+            let resp_headers = await resp.headers;
+            if(resp_status === 406) { // game over
+                try {
+                    let correct_ep = document.querySelector(`[value="${resp_text}"]`)["text"];
+                    guesses +=  ` ${correct_ep} ❌`;
+                }catch(e) {
+                    console.error(e);
+                    guesses += ` ? ❌`;
+                } 
+                document.getElementById("game").style.display = "none";
+                document.getElementById("post").style.display = "block";
+                document.getElementById("post").innerHTML = `
+                <center>
+            <a href="https://rwbyguesser.quadvision.eu" class="title"><h1 style="display: block ruby;"><div style="color: red;">R</div><div style="color: white;">W</div><div style="color: blueviolet;">B</div><div style="color: yellow;">Y</div>Guesser</h1></a>
+            <h5>Our official link : https://rwbyguesser.quadvision.eu</h5>
+            <h3>Made by <a href="https://x.com/ProtOfMantle">@ProtOfMantle on Twitter</a></h3>
+        </center>
+
+                <center>
+            <h1>Total points : ${resp_headers.get("X-Points")}</h1>
+            <center>
+            <div class="start-btn" onclick="startGame();">Try again</div>
+            <p>Game ID : ${settings.game_id}</p>
+            <span style="font-family:  Consolas, 'Courier New', monospace, 'Segoe UI Emoji';">${guesses}</span>
+        </center>
+        </center>`;
+            return;
+            }
+            if(resp_status === 420) { // wrong episode
+                try {
+                    let correct_ep = document.querySelector(`[value="${resp_text}"]`)["text"];
+                    guesses +=  ` ${correct_ep} ❌`;
+                }catch(e) {
+                    console.error(e);
+                    guesses += ` ? ❌`;
+                } 
+            }
+            console.log(id);
+            if(resp_text === "correct") {
+                try {
+                    let correct_ep = document.querySelector(`[data-value="${id}"]`).innerText;
+                    guesses +=  ` ${correct_ep} ✔`;
+                }catch(e) {
+                    console.error(e);
+                    guesses +=  ` ? ✔`;
+                } 
+                points = points + 1;
+                document.getElementById("points").innerHTML = points;
+            }
+            document.getElementById("guesses").innerHTML = guesses;
+            resp = await fetch(`${BASE_URL}/api/round`, {
+                method: "GET",
+                credentials: "include",
+            });
+            var blob = await resp.blob();
+            resp_headers = await resp.headers;
+            var objectURL = URL.createObjectURL(blob);
+            console.log(resp_headers);
+            document.getElementById("mainimg").src = objectURL;
+            document.getElementById("lives").innerHTML = resp_headers.get("X-Lives");
+            document.getElementById("submit").classList.remove("disabled");
+            setTimer();
+        }
+        let time_limit; // this is where we'll store the intervals
+        let end_date;
+        let time_show; // interval for showing the time
+        function setTimer() {
+            if(settings.time !== 0) {
+                clearInterval(time_limit);
+                document.getElementById("timer").style.display = "flex";
+                time_show = setInterval(function() {
+                    if (end_date !== undefined) {
+                        let countdown = end_date-new Date();
+                        console.log(countdown);
+                        var minutes = Math.floor((countdown % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((countdown % (1000 * 60)) / 1000);
+                        document.getElementById("minute").innerHTML = minutes.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
+                        document.getElementById("second").innerHTML = seconds.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
+                    }
+                    
+                }, 1000);
+                time_limit = setInterval(function(){
+                    let resp = fetch(`${BASE_URL}/api/end/${settings.game_id}`, {
+                        method: "GET",
+                        credentials: "include"
+                    });
+                    document.getElementById("game").style.display = "none";
+                    document.getElementById("post").style.display = "block";
+                    document.getElementById("post").innerHTML = `
+                    <center>
+                <a href="https://rwbyguesser.quadvision.eu" class="title"><h1 style="display: block ruby;"><div style="color: red;">R</div><div style="color: white;">W</div><div style="color: blueviolet;">B</div><div style="color: yellow;">Y</div>Guesser</h1></a>
+                <h5>Our official link : https://rwbyguesser.quadvision.eu</h5>
+                <h3>Made by <a href="https://x.com/ProtOfMantle">@ProtOfMantle on Twitter</a></h3>
+            </center>
+
+                    <center>
+                        <h1>You ran out of time!</h1>
+                <h1>Total points : TODO</h1>
+                <center>
+                <div class="start-btn" onclick="startGame();">Try again</div>
+                <p>Game ID : ${settings.game_id}</p>
+                <span style="font-family:  Consolas, 'Courier New', monospace, 'Segoe UI Emoji';">${guesses}</span>
+            </center>
+            </center>`;
+                clearInterval(time_limit);
+                }, settings.time*1000-500);
+                let game_over_date = new Date();
+                game_over_date.setSeconds(game_over_date.getSeconds() + settings.time);
+                end_date = game_over_date;
+            }else {
+                clearInterval(time_show);
+                document.getElementById("timer").style.display = "none";
+            }
+            
+        }
+    </script>
+</body>
+</html>

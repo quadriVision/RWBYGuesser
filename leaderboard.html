@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RWBYGuesser - Leaderboard</title>
+    <meta name="title" content="RWBYGuesser - A simple episode guesser game">
+    <meta name="description" content="Guess the episode from a single frame">
+    <meta name="keywords" content="rwby, rwby fangame, fangame, rwby guesser, rwbyguessr">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="English">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="RWBYGuesser">
+    <meta name="twitter:site" content="@ProtOfMantle">
+    <meta name="twitter:description" content="Guess the episode based on a single frame">
+    <meta name="twitter:image" content="https://rwbyguesser.rubyrose.top/get_image">
+    <style>
+        html,body {
+            height: 100%;
+            width: 100%;
+            background-color: #0E0E0E;
+            color: #F0F0F0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        .container {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+  justify-content: center;
+  margin-left: 20%;
+        }
+        .live-selection {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            height: 10%;
+        }
+        .live-selection div {
+            background-color: #1E1E1E;
+            width: 100%;
+            height: 64px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-left: 0.25rem;
+        }
+        @media only screen and (max-width: 600px) {
+            .live-selection {
+                flex-direction: column;
+            }
+            .live-selection div {
+                width: auto;
+            }
+        }
+        .live-selected {
+            background-color: #3F3F3F !important;
+        }
+        .show-selected {
+            background-color: #3F3F3F !important;
+        }
+        .episode-selected {
+            background-color: #3F3F3F !important;
+        }
+        .start-btn {
+            padding: 3rem;
+            background-color: #3F3F3F !important;
+            font-size: 48px;
+        }
+        #game {
+            display: none;
+        }
+        #mainimg {
+            width: 100%;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            max-width: 650px;
+        }
+        #imgwrapper {
+            display: flex;
+            justify-content: center;
+        }
+        .disabled {
+            pointer-events: none;
+        }
+
+
+        #meow {
+            width: 80%;
+        }
+        table {
+            margin-top: 5%;
+        }
+        table, th, td {
+            border: 1px solid grey;
+            border-collapse: collapse;
+        }
+        td {
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+        .title {
+            color: white;
+            text-decoration: none;
+        }
+        a {
+            color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <script>
+		const BASE_URL = `http${location.hostname === "localhost" || location.hostname === "127.0.0.1" ? "" : "s"}://${window.location.host}`;
+	</script>
+    <!-- hawk tuah -->
+    <div id="menu" class="container">
+        <center>
+            <a href="/" class="title"><h1 style="display: block ruby;"><div style="color: red;">R</div><div style="color: white;">W</div><div style="color: blueviolet;">B</div><div style="color: yellow;">Y</div>Guesser</h1></a>
+            <h3>Made by <a href="https://x.com/ProtOfMantle">@ProtOfMantle on Twitter</a></h3>
+            <h5>Our official link : https://rwbyguesser.quadvision.eu</h5>
+            <h6 id="errormsg" style="color: red !important;"></h6>
+        </center>
+        <a href="/"><h2><< Go back</h2></a>
+        <h3>Gamemode</h3>
+        <div class="live-selection" style="margin-bottom: 0%;">
+            <div class="" onclick="changeSettings(this,'gamemode','main')">
+                Main
+            </div>
+            <div class="" onclick="changeSettings(this,'gamemode','chibi');">Chibi</div>
+            <div class="" onclick="changeSettings(this,'gamemode','mainchibi')">Main + Chibi</div>
+        </div>
+        <h3>Lives</h3>
+        <div class="live-selection">
+            <div class="" onclick="changeSettings(this,'live',1)">
+                1 Live
+            </div>
+            <div class="" onclick="changeSettings(this,'live',3);">3 Lives</div>
+            <div class="" onclick="changeSettings(this,'live',5)">5 Lives</div>
+            <div class="" onclick="changeSettings(this,'live',0)">Any</div>
+
+        </div>
+        <table id="leaderboard">
+            <tr>
+                <th>Name</th>
+                <th>Point</th>
+            </tr>
+        </table>
+    </div>
+    <script>
+        //const BASE_URL = "https://rwbyguesser.rubyrose.top";
+        var settings = {
+            "lives": -1,
+            "gamemode": ""
+        };
+        async function changeSettings(caller,setting,value) {
+            var selectedClass;
+            if(setting === "live") {
+                selectedClass = "live-selected";
+            }else if(setting === "epsel") {
+                selectedClass = "episode-selected";
+            }else if(setting === "time") {
+                selectedClass = "time-selected";
+            }else {
+                selectedClass = "show-selected";
+            }
+            var elems = document.getElementsByClassName(selectedClass);
+            [].forEach.call(elems, function(el) {
+                el.classList.remove(selectedClass);
+            });
+            caller.classList.add(selectedClass);
+            if(setting === "live") {
+                settings.lives = value;
+            }else {
+                settings.gamemode = value;
+            }
+            // check if i can search :3
+            if(settings.lives != -1 && settings.gamemode != "") {
+                let resp = await fetch(`${BASE_URL}/api/leaderboard?lives=${settings.lives}&gamemode=${settings.gamemode}&offset=0`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+                let text = await resp.json();
+                let resp_status = await resp.status;
+                if(resp_status == 400) {
+                    document.getElementById("errormsg").innerHTML = `Error : ${text}`;
+                    console.error(text);
+                }
+                document.getElementById("leaderboard").innerHTML = `<tr>
+                <th id="meow">Name</th>
+                <th>Point</th>
+            </tr>`;
+                for(let i = 0; i < text.length; i++) {
+                    let current_json = text[i];
+                    console.log(current_json[1]);
+                    if(current_json[1].length == 0) {
+                        current_json[1] = "&lt;unnamed&gt;";
+                        console.log(current_json[1]);
+                    }
+                    document.getElementById("leaderboard").innerHTML += `<tr>
+                        <td>${current_json[1]}</td>
+                        <td>${current_json[2]}</td>
+                    </tr>`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
