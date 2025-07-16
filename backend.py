@@ -181,20 +181,17 @@ def get_logs():
         string += json.dumps(jsonneddd) + "<br>"
     return make_response(f"{string}<br>Length : {len(games)}")
 
-
-# ignore this, i never used it
 @app.route("/api/end/<game_id>")
 def stop(game_id):
     print(games)
     for game in games:
         try:
             if (game.game_id == int(game_id)):
-                print("found")
                 games.remove(game)
                 resp = make_response("deleted", 200)
                 return resp
         except:
-            resp = make_response("szart küldtél ez mi a fasz???", 400)
+            resp = make_response("???", 400)
             return resp
     resp = make_response("no matching game_id", 400)
     return resp
