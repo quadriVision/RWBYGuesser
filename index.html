@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6383466274548914"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RWBYGuesser - A simple episode guesser game</title>
@@ -16,7 +14,7 @@
     <meta name="twitter:title" content="RWBYGuesser">
     <meta name="twitter:site" content="@ProtOfMantle">
     <meta name="twitter:description" content="Guess the episode based on a single frame">
-    <meta name="twitter:image" content="https://rwbyguesser.rubyrose.top/get_image">
+    <meta name="twitter:image" content="https://rwbyguesser.quadvision.eu/get_image">
     <style>
         html,body {
             height: 100%;
@@ -151,7 +149,7 @@
         </div>
         <h3>Time limit</h3>
         <div class="live-selection">
-            <div class="" onclick="changeSettings(this,'time',30)">
+            <div class="" onclick="changeSettings(this,'time',5)">
                 30 seconds
             </div>
             <div class="" onclick="changeSettings(this,'time',60);">60 seconds</div>
@@ -812,11 +810,12 @@ break;
                     }
                     
                 }, 1000);
-                time_limit = setInterval(function(){
-                    let resp = fetch(`${BASE_URL}/api/end/${settings.game_id}`, {
+                time_limit = setInterval(async function(){
+                    let resp = await fetch(`${BASE_URL}/api/end/${settings.game_id}`, {
                         method: "GET",
                         credentials: "include"
                     });
+                    let resp_headers = await resp.headers;
                     document.getElementById("game").style.display = "none";
                     document.getElementById("post").style.display = "block";
                     document.getElementById("post").innerHTML = `
@@ -828,7 +827,7 @@ break;
 
                     <center>
                         <h1>You ran out of time!</h1>
-                <h1>Total points : TODO</h1>
+                <h1>Total points : ${resp_headers.get("X-Points")}</h1>
                 <center>
                 <div class="start-btn" onclick="startGame();">Try again</div>
                 <p>Game ID : ${settings.game_id}</p>
