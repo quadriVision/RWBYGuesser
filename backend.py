@@ -181,14 +181,16 @@ def get_logs():
         string += json.dumps(jsonneddd) + "<br>"
     return make_response(f"{string}<br>Length : {len(games)}")
 
+
 @app.route("/api/end/<game_id>")
 def stop(game_id):
     print(games)
     for game in games:
         try:
             if (game.game_id == int(game_id)):
-                games.remove(game)
                 resp = make_response("deleted", 200)
+                resp.headers['X-Points'] = str(game.point)
+                games.remove(game)
                 return resp
         except:
             resp = make_response("???", 400)
