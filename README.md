@@ -8,7 +8,7 @@ In this game, you have to guess the episode based on the screenshot you receive
 2. Download the files and the screenshots from [my website](https://quadvision.eu/episodes.7z)
 3. Put all of those files and folders in one folder
 4. Open CMD in the folder and run "pip install -r requirements.txt". This will install all the necessary dependencies.
-5. After the installation has finished, run "flask --app backend run". You might have to close and reopen the cmd.
+5. After the installation has finished, run "flask --app backend run". You might have to close and reopen the cmd in order for the command to work.
 
 ## How to host using gunicorn and nginx (Linux only)
 1. Do all the steps above except for step 5
